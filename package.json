@@ -1,0 +1,23 @@
+{
+  "name": "resume-website-aws",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alecwest/resume-website-aws.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alecwest/resume-website-aws/issues"
+  },
+  "homepage": "https://github.com/alecwest/resume-website-aws#readme",
+  "devDependencies": {
+    "@aws-sdk/client-s3": "^3.289.0",
+    "@aws-sdk/client-sfn": "^3.289.0"
+  }
+}
