@@ -57,14 +57,16 @@ export const lambdaHandler = async (event, context) => {
       return prev;
     }, {});
     /**
-     * Take first 9 skills, and remove descriptions after first 2 projects and first 3 of anything else
+     * Take first 9 skills, first 2 projects, and remove descriptions after first 3 of anything else
      */
     const prunedEntries = Object.keys(sortedEntries).reduce((prev, type) => {
       if (type === "skills") {
         prev[type] = sortedEntries[type].slice(0, 9);
+      } else if (type === "projects") {
+        prev[type] = sortedEntries[type].slice(0, 2);
       } else {
         prev[type] = sortedEntries[type].map((entry, index) => {
-          if (type === 'projects' && index >= 2 || index >= 3) {
+          if (index >= 3) {
             entry.details.description = [];
           }
           return entry;
