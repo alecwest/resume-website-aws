@@ -1,16 +1,21 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, NoSuchKey } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  NoSuchKey,
+} from "@aws-sdk/client-s3";
 
 const client = new S3Client({
-  region: 'us-east-2'
+  region: "us-east-2",
 });
 
 export const handler = async (event, context) => {
   const targetBucket = "resume-website-pdf-bucket";
   const targetUser = "Alec West".replace(/\s/g, "_");
-  const targetKey = `${targetUser}/${targetUser}_Resume_${(new Date()).getFullYear()}.pdf`;
+  const targetKey = `${targetUser}/${targetUser}_Resume_${new Date().getFullYear()}.pdf`;
   const getObjectCommand = new GetObjectCommand({
     Bucket: targetBucket,
-    Key: targetKey
+    Key: targetKey,
   });
 
   console.log("EVENT:", JSON.stringify(event));
@@ -19,11 +24,11 @@ export const handler = async (event, context) => {
   try {
     console.log("checking for object");
     const getObjectResponse = await client.send(getObjectCommand);
-    
-    const str = await getObjectResponse.Body.transformToString('base64');
+
+    const str = await getObjectResponse.Body.transformToString("base64");
     console.log("existing object size == ", str.length);
     console.log("incoming object size == ", event.body.length);
-    
+
     if (str === event.body) {
       console.log("No PDF change, will not update.");
     } else {
@@ -44,7 +49,8 @@ async function putPdf(targetBucket, targetKey, pdfString) {
   const putCommand = new PutObjectCommand({
     Bucket: targetBucket,
     Key: targetKey,
-    Body: new Buffer.from(pdfString, 'base64')
+    Body: new Buffer.from(pdfString, "base64"),
+    ACL: "public-read",
   });
   return client.send(putCommand);
 }
