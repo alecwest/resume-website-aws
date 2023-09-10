@@ -28,7 +28,8 @@ export const lambdaHandler = async (event, context) => {
       },
     };
     const response = await axios.get(
-      "https://9apc2wzyzb.execute-api.us-east-2.amazonaws.com/production/resume/alecwest", requestConfig
+      "https://9apc2wzyzb.execute-api.us-east-2.amazonaws.com/production/resume/alecwest",
+      requestConfig
     );
 
     const entries = response.data.Items;
@@ -57,13 +58,16 @@ export const lambdaHandler = async (event, context) => {
       return prev;
     }, {});
     /**
-     * Take first 9 skills, first 2 projects, and remove descriptions after first 3 of anything else
+     * Take all skills rated at 3+, first 3 jobs and projects,
+     * and remove descriptions but keep the rest after first 3 of anything else (currently no other types)
      */
     const prunedEntries = Object.keys(sortedEntries).reduce((prev, type) => {
       if (type === "skills") {
-        prev[type] = sortedEntries[type].slice(0, 9);
-      } else if (type === "projects") {
-        prev[type] = sortedEntries[type].slice(0, 2);
+        prev[type] = sortedEntries[type].filter((entry) => {
+          return entry.details.proficiency >= 3;
+        });
+      } else if (type === "projects" || type === "employment") {
+        prev[type] = sortedEntries[type].slice(0, 3);
       } else {
         prev[type] = sortedEntries[type].map((entry, index) => {
           if (index >= 3) {
@@ -81,7 +85,7 @@ export const lambdaHandler = async (event, context) => {
     const lambdaResponse = {
       statusCode: 200,
       body: JSON.stringify(prunedEntries),
-    }; 
+    };
     console.log("returning", JSON.stringify(lambdaResponse));
     return lambdaResponse;
   } catch (err) {
