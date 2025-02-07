@@ -1,6 +1,7 @@
-const AWS = require('aws-sdk');
+const { DynamoDBDocument } = require('@aws-sdk/lib-dynamodb');
+const { DynamoDB } = require('@aws-sdk/client-dynamodb');
 
-const dynamo = new AWS.DynamoDB.DocumentClient();
+const dynamo = DynamoDBDocument.from(new DynamoDB());
 
 /**
  * Demonstrates a simple HTTP endpoint using API Gateway. You have full
@@ -33,13 +34,13 @@ exports.handler = async (event, context) => {
                     KeyConditionExpression:"#u = :user",
                     ExpressionAttributeNames:{"#u":"user"},
                     ExpressionAttributeValues:{":user":event.pathParameters.user}
-                })).promise();
+                }));
                 break;
             case 'POST':
                 validateUserAccess(event);
                 body = await dynamo.put(Object.assign({}, parameters, {
                     Item: JSON.parse(event.body)
-                })).promise();
+                }));
                 break;
             default:
                 throw new Error(`Unsupported method "${event.httpMethod}"`);
